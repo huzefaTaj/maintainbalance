@@ -15,7 +15,7 @@ def user_login(request):
             if user is not None:
                 login(request, user)
                 messages.success(request, "Login successful.")
-                return redirect('dashboard')  # Redirect to dashboard after login
+                return redirect('add_transaction')  # Redirect to dashboard after login
             else:
                 messages.error(request, "Invalid username or password.")
         else:

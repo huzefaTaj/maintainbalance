@@ -94,7 +94,7 @@
     <tr>
         <td>{{ bank.bank_name }}</td>
         <td>{{ bank.account_number }}</td>
-        <td>${{ bank.balance }}</td>
+        <td>₹{{ bank.balance }}</td>
     </tr>
     {% endfor %}
 </table>
@@ -113,7 +113,7 @@
         <td>{{ transaction.date }}</td>
         <td>{{ transaction.bank.bank_name }}</td>
         <td>{{ transaction.type }}</td>
-        <td>${{ transaction.amount }}</td>
+        <td>₹{{ transaction.amount }}</td>
         <td>{{ transaction.description }}</td>
     </tr>
     {% endfor %}
