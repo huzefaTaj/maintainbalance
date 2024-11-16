@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Transaction{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+        color: #333;
+    }
+
+    h1 {
+        color: #4CAF50;
+        text-align: center;
+        margin-top: 30px;
+    }
+
+    form {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+        margin: 0 auto;
+    }
+
+    form label {
+        display: block;
+        margin: 10px 0 5px;
+        font-weight: bold;
+    }
+
+    form select, form input, form textarea {
+        width: 100%;
+        padding: 12px;
+        margin: 8px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+
+    form button {
+        width: 100%;
+        padding: 12px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+
+    form button:hover {
+        background-color: #45a049;
+    }
+
+    form textarea {
+        resize: vertical;
+        height: 150px;
+    }
+
+    .error {
+        color: red;
+        text-align: center;
+        margin-top: 15px;
+    }
+
+    @media screen and (max-width: 768px) {
+        h1 {
+            font-size: 24px;
+        }
+
+        form {
+            padding: 20px;
+            width: 90%;
+        }
+
+        form label {
+            font-size: 14px;
+        }
+
+        form select, form input, form textarea, form button {
+            font-size: 14px;
+        }
+    }
+</style>
+
+<h1>Add a New Transaction</h1>
+<form method="POST">
+    {% csrf_token %}
+    <label for="bank">Bank:</label>
+    <select name="bank" required>
+        {% for bank in banks %}
+        <option value="{{ bank.id }}">{{ bank.bank_name }} - {{ bank.account_number }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="type">Type:</label>
+    <select name="type" required>
+        <option value="credit">Credit</option>
+        <option value="debit">Debit</option>
+    </select>
+
+    <label for="amount">Amount:</label>
+    <input type="number" step="0.01" name="amount" required>
+
+    <label for="description">Description:</label>
+    <textarea name="description"></textarea>
+
+    <button type="submit">Add Transaction</button>
+
+    {% if error %}
+    <p class="error">{{ error }}</p>
+    {% endif %}
+</form>
+{% endblock %}
