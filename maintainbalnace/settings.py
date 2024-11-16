@@ -25,16 +25,8 @@ SECRET_KEY = 'django-insecure-!k0y+*0)wqc(orio&6te_9#8)3_*-wn)lua&g*tf(*s3g$b9(7
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-DEBUG = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'tajhuzefa91@gmail.com'
-EMAIL_HOST_PASSWORD = 'rfdkcrloeymblscr'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-ALLOWED_HOSTS = []
-LOGOUT_REDIRECT_URL = '/' 
+ALLOWED_HOSTS = ['*']
+LOGOUT_REDIRECT_URL = '/'
 
 # Application definition
 
@@ -114,7 +106,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'  # Replace with your desired timezone
+USE_TZ = True  # Ensure timezone support is enabled
 
 USE_I18N = True
 
