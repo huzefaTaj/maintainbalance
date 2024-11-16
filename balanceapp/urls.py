@@ -7,4 +7,5 @@ urlpatterns = [
     path('add_bank/', views.add_bank, name='add_bank'),  # Add bank
     path('login/', views.user_login, name='login'),  # Custom login view
     path('logout/', views.user_logout, name='logout'),  # Logout page
+     path('set-spending-limit/', views.set_spending_limit, name='set_spending_limit'),  # Set spending limit
 ]

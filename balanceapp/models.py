@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from decimal import Decimal
 
 class Bank(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)  # Associate bank with a user
@@ -33,3 +34,13 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.type.capitalize()} - ${self.amount} on {self.date.strftime('%Y-%m-%d')}"
+    
+class SpendingLimit(models.Model):
+    """
+    Model to store a daily spending limit for users.
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="spending_limit")
+    limit = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('500.00'))
+
+    def __str__(self):
+        return f"{self.user.username} - Limit: {self.limit}"
