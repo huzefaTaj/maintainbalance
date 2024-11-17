@@ -57,6 +57,7 @@
         color: #555;
     }
 
+    /* Responsive design */
     @media screen and (max-width: 768px) {
         h1 {
             font-size: 24px;
@@ -80,9 +81,17 @@
             word-wrap: break-word;
         }
     }
+
+    /* Style for image display */
+    .chart {
+        width: 90%;
+        margin: 20px auto;
+        display: block;
+    }
 </style>
 
 <h1>Dashboard</h1>
+
 <h2>My Banks</h2>
 <table>
     <tr>
@@ -118,4 +127,11 @@
     </tr>
     {% endfor %}
 </table>
+
+<h2>Daywise Debit Transactions</h2>
+<img style="width: 500px; height: 500px;" class="chart" src="data:image/png;base64,{{ debit_img }}" alt="Debit Transactions Chart">
+
+<h2>Daywise Credit Transactions</h2>
+<img style="width: 500px; height: 500px;" class="chart" src="data:image/png;base64,{{ credit_img }}" alt="Credit Transactions Chart">
+
 {% endblock %}

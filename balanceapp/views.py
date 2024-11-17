@@ -27,17 +27,103 @@ def user_login(request):
 
     return render(request, 'login.html', {'form': form})
 
+import matplotlib
+from django.db.models.functions import TruncDate
+from django.db.models import Sum
+import matplotlib.pyplot as plt
+from io import BytesIO
+import base64
 # Dashboard View
+
+
+matplotlib.use('Agg')  # To use matplotlib in a web environment
+
 def dashboard(request):
     if not request.user.is_authenticated:
         return redirect('login')  # Redirect unauthenticated users to login
+    
     banks = Bank.objects.filter(user=request.user)
     transactions = Transaction.objects.filter(bank__user=request.user).order_by('-date')[:10]
+
+    # Grouping transactions by date and type (debit or credit)
+    debit_transactions = (Transaction.objects
+                          .filter(bank__user=request.user, type='debit')
+                          .annotate(transaction_date=TruncDate('date'))  # Renaming the annotation
+                          .values('transaction_date')  # Use new name
+                          .annotate(total_debit=Sum('amount'))
+                          .order_by('transaction_date'))  # Use new name
+
+    credit_transactions = (Transaction.objects
+                           .filter(bank__user=request.user, type='credit')
+                           .annotate(transaction_date=TruncDate('date'))  # Renaming the annotation
+                           .values('transaction_date')  # Use new name
+                           .annotate(total_credit=Sum('amount'))
+                           .order_by('transaction_date'))  # Use new name
+
+    # Prepare data for plotting (debit transactions)
+    debit_dates = [transaction['transaction_date'] for transaction in debit_transactions]
+    debit_values = [transaction['total_debit'] for transaction in debit_transactions]
+
+    # Prepare data for plotting (credit transactions)
+    credit_dates = [transaction['transaction_date'] for transaction in credit_transactions]
+    credit_values = [transaction['total_credit'] for transaction in credit_transactions]
+
+    # Format dates to show only Day and Month (e.g., 15 Jan)
+    debit_dates = [date.strftime('%d %b') for date in debit_dates]
+    credit_dates = [date.strftime('%d %b') for date in credit_dates]
+
+    # Create bar chart for debit transactions with a trend line
+    fig_debit, ax_debit = plt.subplots()
+    ax_debit.bar(debit_dates, debit_values, color='red', label='Debit')  # Bar chart
+    ax_debit.plot(debit_dates, debit_values, marker='o', color='black', linestyle='-', label='Debit Trend')  # Trend line
+    ax_debit.set_xlabel('Date')
+    ax_debit.set_ylabel('Amount (₹)')
+    ax_debit.set_title('Daywise Debit Transactions')
+    ax_debit.legend()
+
+    # Rotate the date labels for better clarity
+    plt.xticks(rotation=45)
+    plt.tight_layout()  # Adjust layout to prevent cropping
+
+    # Save the debit plot to a BytesIO object
+    debit_img = BytesIO()
+    fig_debit.savefig(debit_img, format='png')
+    debit_img.seek(0)
+    debit_img_base64 = base64.b64encode(debit_img.getvalue()).decode('utf-8')
+
+    # Create bar chart for credit transactions with a trend line
+    fig_credit, ax_credit = plt.subplots()
+    ax_credit.bar(credit_dates, credit_values, color='green', label='Credit')  # Bar chart
+    ax_credit.plot(credit_dates, credit_values, marker='o', color='black', linestyle='-', label='Credit Trend')  # Trend line
+    ax_credit.set_xlabel('Date')
+    ax_credit.set_ylabel('Amount (₹)')
+    ax_credit.set_title('Daywise Credit Transactions')
+    ax_credit.legend()
+
+    # Rotate the date labels for better clarity
+    plt.xticks(rotation=45)
+    plt.tight_layout()  # Adjust layout to prevent cropping
+
+    # Save the credit plot to a BytesIO object
+    credit_img = BytesIO()
+    fig_credit.savefig(credit_img, format='png')
+    credit_img.seek(0)
+    credit_img_base64 = base64.b64encode(credit_img.getvalue()).decode('utf-8')
+
     context = {
         'banks': banks,
         'transactions': transactions,
+        'debit_img': debit_img_base64,
+        'credit_img': credit_img_base64,
     }
+
     return render(request, 'dashboard.html', context)
+
+
+
+
+
+
 
 # Add Bank View
 def add_bank(request):
