@@ -23,15 +23,6 @@ class Transaction(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     description = models.TextField(blank=True, null=True)
 
-    def save(self, *args, **kwargs):
-        # Update bank balance based on transaction type
-        if self.type == 'credit':
-            self.bank.balance += self.amount
-        elif self.type == 'debit' and self.bank.balance >= self.amount:
-            self.bank.balance -= self.amount
-        self.bank.save()  # Save updated balance to the bank
-        super().save(*args, **kwargs)
-
     def __str__(self):
         return f"{self.type.capitalize()} - ${self.amount} on {self.date.strftime('%Y-%m-%d')}"
     
