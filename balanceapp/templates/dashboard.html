@@ -129,9 +129,24 @@
 </table>
 
 <h2>Daywise Debit Transactions</h2>
-<img style="width: 500px; height: 500px;" class="chart" src="data:image/png;base64,{{ debit_img }}" alt="Debit Transactions Chart">
+<img class="chart" src="data:image/png;base64,{{ debit_img }}" alt="Debit Transactions Chart">
 
 <h2>Daywise Credit Transactions</h2>
-<img style="width: 500px; height: 500px;" class="chart" src="data:image/png;base64,{{ credit_img }}" alt="Credit Transactions Chart">
+<img class="chart" src="data:image/png;base64,{{ credit_img }}" alt="Credit Transactions Chart">
+
+<style>
+  .chart {
+    width: 100%;
+    max-width: 500px; /* Maximum width */
+    height: auto; /* Maintain aspect ratio */
+  }
+
+  /* Mobile responsiveness */
+  @media screen and (max-width: 768px) {
+    .chart {
+      max-width: 100%; /* Allow images to scale down on smaller screens */
+    }
+  }
+</style>
 
 {% endblock %}
