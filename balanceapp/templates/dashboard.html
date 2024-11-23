@@ -57,6 +57,71 @@
         color: #555;
     }
 
+    /* Button for Delete 14 days data */
+    .delete-button {
+        display: inline-block;
+        margin: 20px 0;
+        padding: 10px 20px;
+        background-color: #FF5722;
+        color: #fff;
+        font-size: 16px;
+        text-align: center;
+        border-radius: 5px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .delete-button:hover {
+        background-color: #e64a19;
+    }
+
+    /* Debit and Credit Amounts */
+    .total-amounts {
+        font-size: 18px;
+        margin-top: 20px;
+        padding: 10px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .total-amounts span {
+        font-weight: bold;
+        color: #4CAF50;
+    }
+
+    /* Pagination styles */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        margin: 20px auto;
+        flex-wrap: wrap;
+    }
+
+    .pagination a, .pagination span {
+        display: inline-block;
+        padding: 10px 15px;
+        margin: 2px;
+        text-decoration: none;
+        color: #4CAF50;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .pagination a:hover {
+        background-color: #4CAF50;
+        color: #fff;
+    }
+
+    .pagination span {
+        background-color: #4CAF50;
+        color: #fff;
+    }
+
     /* Responsive design */
     @media screen and (max-width: 768px) {
         h1 {
@@ -80,13 +145,44 @@
         td {
             word-wrap: break-word;
         }
+
+        .pagination {
+            gap: 5px;
+        }
+
+        .pagination a, .pagination span {
+            font-size: 14px;
+            padding: 8px 12px;
+        }
+
+        .delete-button {
+            width: 100%;
+            font-size: 18px;
+            padding: 12px 20px;
+        }
+
+        .total-amounts {
+            font-size: 16px;
+        }
     }
 
-    /* Style for image display */
+    /* Chart display */
     .chart {
         width: 90%;
         margin: 20px auto;
         display: block;
+    }
+
+    .chart {
+        width: 100%;
+        max-width: 500px;
+        height: auto;
+    }
+
+    @media screen and (max-width: 768px) {
+        .chart {
+            max-width: 100%;
+        }
     }
 </style>
 
@@ -108,6 +204,8 @@
     {% endfor %}
 </table>
 
+<a href="/delete-data" class="delete-button">Delete 14 days data</a>
+
 <h2>Recent Transactions</h2>
 <table>
     <tr>
@@ -128,25 +226,28 @@
     {% endfor %}
 </table>
 
+<div class="pagination">
+    {% if transactions.has_previous %}
+        <a href="?page=1">First</a>
+        <a href="?page={{ transactions.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    <span>Page {{ transactions.number }} of {{ transactions.paginator.num_pages }}</span>
+
+    {% if transactions.has_next %}
+        <a href="?page={{ transactions.next_page_number }}">Next</a>
+        <a href="?page={{ transactions.paginator.num_pages }}">Last</a>
+    {% endif %}
+</div>
+
+<div class="total-amounts">
+    Total Debit amount: <span>₹{{ sum_debit }}</span> | Total Credit amount: <span>₹{{ sum_credit }}</span>
+</div>
+
 <h2>Daywise Debit Transactions</h2>
 <img class="chart" src="data:image/png;base64,{{ debit_img }}" alt="Debit Transactions Chart">
 
 <h2>Daywise Credit Transactions</h2>
 <img class="chart" src="data:image/png;base64,{{ credit_img }}" alt="Credit Transactions Chart">
-
-<style>
-  .chart {
-    width: 100%;
-    max-width: 500px; /* Maximum width */
-    height: auto; /* Maintain aspect ratio */
-  }
-
-  /* Mobile responsiveness */
-  @media screen and (max-width: 768px) {
-    .chart {
-      max-width: 100%; /* Allow images to scale down on smaller screens */
-    }
-  }
-</style>
 
 {% endblock %}

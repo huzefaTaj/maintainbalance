@@ -8,4 +8,6 @@ urlpatterns = [
     path('login/', views.user_login, name='login'),  # Custom login view
     path('logout/', views.user_logout, name='logout'),  # Logout page
      path('set-spending-limit/', views.set_spending_limit, name='set_spending_limit'),  # Set spending limit
+     path('delete-data/', views.delete_first_14_days_data, name='set_spending_limit'),  # Set spending limit
+    #  path('balance-chart/', views.balance_chart, name='balance_chart'),
 ]

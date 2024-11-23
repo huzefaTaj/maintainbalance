@@ -6,6 +6,9 @@ from django.contrib import messages
 from decimal import Decimal
 from django.utils.timezone import now
 from django.core.mail import send_mail
+from django.core.paginator import Paginator
+from datetime import timedelta
+from django.utils.timezone import now
 
 def user_login(request):
     if request.method == "POST":
@@ -38,13 +41,42 @@ import base64
 
 matplotlib.use('Agg')  # To use matplotlib in a web environment
 
+def delete_first_14_days_data(request):
+    # Get all transactions for the user, ordered by date ascending (oldest first)
+    transactions = Transaction.objects.filter(bank__user=request.user).order_by('date')
+
+    if transactions.exists():
+        # Get today's date
+        today = now().date()
+        
+        # Calculate the cutoff date as 14 days before today
+        cutoff_date = today - timedelta(days=14)
+
+        # Delete all transactions older than the cutoff date
+        transactions_to_delete = transactions.filter(date__lt=cutoff_date)
+        transactions_to_delete.delete()
+
+        return redirect('dashboard')
+    else:
+        return redirect('dashboard')
+
+
 def dashboard(request):
     if not request.user.is_authenticated:
         return redirect('login')  # Redirect unauthenticated users to login
     
     banks = Bank.objects.filter(user=request.user)
     transactions = Transaction.objects.filter(bank__user=request.user).order_by('-date')[:10]
+    paginator = Paginator(transactions, 8)
+    
+    # Get the current page number from the request
+    page_number = request.GET.get('page')
+    
+    # Get the page object for the current page
+    page_obj = paginator.get_page(page_number)
 
+    sum_debit=Transaction.objects.filter(bank__user=request.user, type='debit').aggregate(total_debit=Sum('amount'))['total_debit']
+    sum_credit=Transaction.objects.filter(bank__user=request.user, type='credit').aggregate(total_debit=Sum('amount'))['total_debit']
     # Grouping transactions by date and type (debit or credit)
     debit_transactions = (Transaction.objects
                           .filter(bank__user=request.user, type='debit')
@@ -112,7 +144,9 @@ def dashboard(request):
 
     context = {
         'banks': banks,
-        'transactions': transactions,
+        'transactions': page_obj,
+        'sum_debit':sum_debit,
+        'sum_credit':sum_credit,
         'debit_img': debit_img_base64,
         'credit_img': credit_img_base64,
     }
